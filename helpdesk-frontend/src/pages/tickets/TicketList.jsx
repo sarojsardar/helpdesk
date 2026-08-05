@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getTickets, bulkUpdate, getTags, getSavedFilters, createSavedFilter, deleteSavedFilter } from '../../api/tickets';
 import { getCategories, getAgents } from '../../api/users';
+import { exportTickets } from '../../api/admin';
 import { useAuth } from '../../context/AuthContext';
 import Pagination from '../../components/Pagination';
 
@@ -107,6 +108,24 @@ export default function TicketList() {
     setSavedFilters((s) => s.filter((f) => f.id !== id));
   };
 
+  const handleExport = async () => {
+    try {
+      const params = {};
+      if (filters.status) params.status = filters.status;
+      if (filters.priority) params.priority = filters.priority;
+      if (filters.category_id) params.category_id = filters.category_id;
+      const res = await exportTickets(params);
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `tickets_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch { /* silently fail */ }
+  };
+
   const activeFilterCount = [filters.status, filters.priority, filters.category_id, filters.tag_id, filters.search].filter(Boolean).length;
 
   const SortIcon = ({ col }) => {
@@ -120,6 +139,11 @@ export default function TicketList() {
       <div className="page-header">
         <h2>Tickets {meta.total > 0 && <span className="ticket-count">({meta.total})</span>}</h2>
         <div style={{ display: 'flex', gap: 8 }}>
+          {(isAdmin || user?.role === 'staff') && (
+            <button className="btn-sm btn-outline" onClick={handleExport} title="Export as CSV">
+              📥 Export CSV
+            </button>
+          )}
           {isAdmin && (
             <button className="btn-sm btn-outline" onClick={() => setShowSaveFilter((v) => !v)}>
               💾 Save Filter

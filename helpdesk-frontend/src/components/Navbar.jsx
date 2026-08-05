@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { IconTicket, IconUser, IconDashboard, IconLogOut, IconMenu, IconPlus, IconSettings } from './Icons';
+import AvailabilityToggle from './AvailabilityToggle';
 
 export default function Navbar() {
   const { user, logout }    = useAuth();
@@ -42,6 +43,16 @@ export default function Navbar() {
           to={user?.role === 'admin' ? '/admin/tickets' : user?.role === 'staff' ? '/staff/tickets' : '/user/tickets'}
           className={isActive('/admin/tickets') || isActive('/staff/tickets') || isActive('/user/tickets') ? 'nav-active' : ''}
         >Tickets</Link>
+        <Link
+          to={user?.role === 'staff' ? '/staff/kb' : '/user/kb'}
+          className={isActive('/staff/kb') || isActive('/user/kb') ? 'nav-active' : ''}
+        >Knowledge Base</Link>
+        {user?.role === 'staff' && (
+          <Link to="/staff/quick-actions" className={isActive('/staff/quick-actions') ? 'nav-active' : ''}>Quick Actions</Link>
+        )}
+        {user?.role === 'user' && (
+          <Link to="/user/dashboard" className={isActive('/user/dashboard') ? 'nav-active' : ''}>My Tickets</Link>
+        )}
         {user?.role === 'user' && (
           <Link to="/user/tickets/create" className={isActive('/user/tickets/create') ? 'nav-active' : ''}>
             <IconPlus /> New Ticket
@@ -55,6 +66,7 @@ export default function Navbar() {
       </div>
 
       <div className="nav-right">
+        {user?.role === 'staff' && <AvailabilityToggle />}
         <div className="nav-profile" ref={profileRef}>
           <button className="nav-avatar" onClick={() => setProfileOpen(!profileOpen)}>
             <span className="avatar-initials">{initials}</span>

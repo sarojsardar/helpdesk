@@ -14,7 +14,9 @@ class StatsController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize('manage', User::class);
+        if (! in_array($request->user()->role, ['admin', 'staff'])) {
+            abort(403, 'Unauthorized.');
+        }
 
         // All ticket counts in one query
         $ticketStats = Ticket::query()

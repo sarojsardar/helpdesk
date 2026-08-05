@@ -8,11 +8,13 @@ class AutoAssignService
 {
     /**
      * Return the least-loaded active staff agent for round-robin assignment.
+     * Skips agents who are not "online" (busy/away are excluded).
      */
     public function nextAgent(): ?User
     {
         return User::where('role', 'staff')
             ->where('is_active', true)
+            ->where('availability_status', 'online')
             ->withCount(['assignedTickets as open_tickets' => fn($q) => $q->whereNotIn('status', ['resolved', 'closed'])])
             ->orderBy('open_tickets')
             ->orderBy('id')

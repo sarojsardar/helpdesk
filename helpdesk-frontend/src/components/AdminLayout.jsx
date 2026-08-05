@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
+import AnnouncementBanner from './AnnouncementBanner';
 import {
   IconDashboard, IconUsers, IconTag, IconTicket, IconUser,
   IconLogOut, IconMenu, IconChevronLeft, IconChevronRight,
@@ -9,15 +10,22 @@ import {
 } from './Icons';
 
 const NAV = [
-  { to: '/admin',            icon: <IconDashboard />,  label: 'Overview',        exact: true },
-  { to: '/admin/tickets',    icon: <IconTicket />,     label: 'All Tickets' },
-  { to: '/admin/users',      icon: <IconUsers />,      label: 'Users' },
-  { to: '/admin/categories', icon: <IconTag />,        label: 'Categories' },
-  { to: '/admin/tags',       icon: <IconLabel />,      label: 'Tags' },
-  { to: '/admin/canned',     icon: <IconClipboard />,  label: 'Canned Responses' },
-  { to: '/admin/reports',    icon: <IconBarChart />,   label: 'Reports' },
-  { to: '/admin/audit-log',  icon: <IconActivity />,   label: 'Audit Log' },
-  { to: '/admin/profile',    icon: <IconUser />,       label: 'My Profile' },
+  { to: '/admin',                icon: <IconDashboard />,  label: 'Overview',          exact: true },
+  { to: '/admin/tickets',        icon: <IconTicket />,     label: 'All Tickets' },
+  { to: '/admin/users',          icon: <IconUsers />,      label: 'Users' },
+  { to: '/admin/departments',    icon: <IconUsers />,      label: 'Departments' },
+  { to: '/admin/categories',     icon: <IconTag />,        label: 'Categories' },
+  { to: '/admin/tags',           icon: <IconLabel />,      label: 'Tags' },
+  { to: '/admin/templates',      icon: <IconClipboard />,  label: 'Ticket Templates' },
+  { to: '/admin/canned',         icon: <IconClipboard />,  label: 'Canned Responses' },
+  { to: '/admin/kb',             icon: <IconClipboard />,  label: 'Knowledge Base' },
+  { to: '/admin/sla-policies',   icon: <IconActivity />,   label: 'SLA Policies' },
+  { to: '/admin/escalation-rules', icon: <IconActivity />, label: 'Escalation Rules' },
+  { to: '/admin/business-hours', icon: <IconActivity />,   label: 'Business Hours' },
+  { to: '/admin/announcements',  icon: <IconBarChart />,   label: 'Announcements' },
+  { to: '/admin/reports',        icon: <IconBarChart />,   label: 'Reports' },
+  { to: '/admin/audit-log',      icon: <IconActivity />,   label: 'Audit Log' },
+  { to: '/admin/profile',        icon: <IconUser />,       label: 'My Profile' },
 ];
 
 export default function AdminLayout() {
@@ -109,6 +117,7 @@ export default function AdminLayout() {
         </header>
 
         <main className="admin-content">
+          <AnnouncementBanner />
           <Outlet />
         </main>
       </div>

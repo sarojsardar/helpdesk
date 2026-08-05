@@ -15,6 +15,7 @@ class Ticket extends Model
         'response_due_at', 'resolution_due_at',
         'first_response_at', 'resolved_at',
         'notified_due_soon', 'notified_overdue',
+        'snooze_until',
     ];
 
     protected function casts(): array
@@ -24,6 +25,7 @@ class Ticket extends Model
             'resolution_due_at' => 'datetime',
             'first_response_at' => 'datetime',
             'resolved_at'       => 'datetime',
+            'snooze_until'      => 'datetime',
             'notified_due_soon' => 'boolean',
             'notified_overdue'  => 'boolean',
         ];

@@ -12,7 +12,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'department', 'is_active',
+        'name', 'email', 'password', 'role', 'department', 'department_id', 'is_active',
+        'availability_status',
         'two_factor_secret', 'two_factor_enabled', 'two_factor_pending_code', 'two_factor_code_expires_at',
     ];
 
@@ -40,4 +41,5 @@ class User extends Authenticatable
     public function replies()         { return $this->hasMany(Reply::class); }
     public function savedFilters()    { return $this->hasMany(SavedFilter::class); }
     public function loginLogs()       { return $this->hasMany(LoginLog::class); }
+    public function departmentRelation() { return $this->belongsTo(Department::class, 'department_id'); }
 }

@@ -7,12 +7,12 @@ use App\Models\User;
 
 class TicketPolicy
 {
-    // Admin sees all, staff sees assigned + own, user sees own only
+    // Admin sees all, staff sees assigned + unassigned + own, user sees own only
     public function view(User $user, Ticket $ticket): bool
     {
         return match ($user->role) {
             'admin' => true,
-            'staff' => $ticket->assigned_to === $user->id || $ticket->user_id === $user->id,
+            'staff' => $ticket->assigned_to === $user->id || is_null($ticket->assigned_to) || $ticket->user_id === $user->id,
             default => $ticket->user_id === $user->id,
         };
     }

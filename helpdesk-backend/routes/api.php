@@ -1,20 +1,29 @@
 <?php
 
+use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AttachmentController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BulkTicketController;
+use App\Http\Controllers\Api\BusinessHoursController;
 use App\Http\Controllers\Api\CannedResponseController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\EscalationRuleController;
+use App\Http\Controllers\Api\KbArticleController;
+use App\Http\Controllers\Api\KbCategoryController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\ReplyController;
 use App\Http\Controllers\Api\SavedFilterController;
+use App\Http\Controllers\Api\SlaPolicyController;
 use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\TicketExportController;
 use App\Http\Controllers\Api\TicketMergeController;
+use App\Http\Controllers\Api\TicketTemplateController;
 use App\Http\Controllers\Api\TwoFactorController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +62,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     // Tickets
     Route::get('/tickets',                      [TicketController::class, 'index']);
+    Route::get('/tickets/export',               [TicketExportController::class, 'export']);
     Route::post('/tickets',                     [TicketController::class, 'store']);
     Route::get('/tickets/{ticket}',             [TicketController::class, 'show']);
     Route::put('/tickets/{ticket}',             [TicketController::class, 'update']);
@@ -74,7 +84,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Ratings
     Route::post('/tickets/{ticket}/rating',     [RatingController::class, 'store']);
 
-    // Stats (admin only)
+    // Stats (admin/staff)
     Route::get('/stats', [StatsController::class, 'index']);
 
     // Users (admin)
@@ -100,4 +110,70 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     // Audit Log (admin)
     Route::get('/audit-log', [AuditLogController::class, 'index']);
+
+    // ─── NEW: Departments ──────────────────────────────────────
+    Route::get('/departments',                  [DepartmentController::class, 'index']);
+    Route::get('/departments/{department}',     [DepartmentController::class, 'show']);
+    Route::post('/departments',                 [DepartmentController::class, 'store']);
+    Route::put('/departments/{department}',     [DepartmentController::class, 'update']);
+    Route::delete('/departments/{department}',  [DepartmentController::class, 'destroy']);
+
+    // ─── NEW: Knowledge Base ───────────────────────────────────
+    Route::get('/kb/articles',                  [KbArticleController::class, 'index']);
+    Route::get('/kb/articles/{slugOrId}',       [KbArticleController::class, 'show']);
+    Route::post('/kb/articles',                 [KbArticleController::class, 'store']);
+    Route::put('/kb/articles/{kbArticle}',      [KbArticleController::class, 'update']);
+    Route::delete('/kb/articles/{kbArticle}',   [KbArticleController::class, 'destroy']);
+    Route::post('/kb/articles/{kbArticle}/vote', [KbArticleController::class, 'vote']);
+    Route::get('/kb/categories',                [KbCategoryController::class, 'index']);
+    Route::post('/kb/categories',               [KbCategoryController::class, 'store']);
+    Route::put('/kb/categories/{kbCategory}',   [KbCategoryController::class, 'update']);
+    Route::delete('/kb/categories/{kbCategory}', [KbCategoryController::class, 'destroy']);
+
+    // ─── NEW: SLA Policies (admin) ────────────────────────────
+    Route::get('/sla-policies',                 [SlaPolicyController::class, 'index']);
+    Route::post('/sla-policies',                [SlaPolicyController::class, 'store']);
+    Route::put('/sla-policies/{slaPolicy}',     [SlaPolicyController::class, 'update']);
+    Route::delete('/sla-policies/{slaPolicy}',  [SlaPolicyController::class, 'destroy']);
+
+    // ─── NEW: Escalation Rules (admin) ────────────────────────
+    Route::get('/escalation-rules',                     [EscalationRuleController::class, 'index']);
+    Route::post('/escalation-rules',                    [EscalationRuleController::class, 'store']);
+    Route::put('/escalation-rules/{escalationRule}',    [EscalationRuleController::class, 'update']);
+    Route::delete('/escalation-rules/{escalationRule}', [EscalationRuleController::class, 'destroy']);
+
+    // ─── NEW: Ticket Templates ────────────────────────────────
+    Route::get('/ticket-templates',                     [TicketTemplateController::class, 'index']);
+    Route::post('/ticket-templates',                    [TicketTemplateController::class, 'store']);
+    Route::put('/ticket-templates/{ticketTemplate}',    [TicketTemplateController::class, 'update']);
+    Route::delete('/ticket-templates/{ticketTemplate}', [TicketTemplateController::class, 'destroy']);
+
+    // ─── NEW: Business Hours & Holidays ───────────────────────
+    Route::get('/business-hours',                [BusinessHoursController::class, 'index']);
+    Route::put('/business-hours',                [BusinessHoursController::class, 'updateSchedule']);
+    Route::get('/business-hours/holidays',       [BusinessHoursController::class, 'holidays']);
+    Route::post('/business-hours/holidays',      [BusinessHoursController::class, 'storeHoliday']);
+    Route::delete('/business-hours/holidays/{holiday}', [BusinessHoursController::class, 'destroyHoliday']);
+
+    // ─── NEW: Announcements ───────────────────────────────────
+    Route::get('/announcements/active',          [AnnouncementController::class, 'active']);
+    Route::get('/announcements',                 [AnnouncementController::class, 'index']);
+    Route::post('/announcements',                [AnnouncementController::class, 'store']);
+    Route::put('/announcements/{announcement}',  [AnnouncementController::class, 'update']);
+    Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy']);
+
+    // ─── NEW: Staff Dashboard & Actions ───────────────────────
+    Route::get('/staff/dashboard',               [\App\Http\Controllers\Api\StaffDashboardController::class, 'index']);
+    Route::get('/staff/status',                  [\App\Http\Controllers\Api\StaffStatusController::class, 'show']);
+    Route::put('/staff/status',                  [\App\Http\Controllers\Api\StaffStatusController::class, 'update']);
+    Route::post('/staff/batch-reply',            [\App\Http\Controllers\Api\StaffActionsController::class, 'batchReply']);
+    Route::patch('/tickets/{ticket}/snooze',     [\App\Http\Controllers\Api\StaffActionsController::class, 'snooze']);
+    Route::delete('/tickets/{ticket}/snooze',    [\App\Http\Controllers\Api\StaffActionsController::class, 'unsnooze']);
+
+    // ─── NEW: Customer Portal ─────────────────────────────────
+    Route::get('/customer/summary',                        [\App\Http\Controllers\Api\CustomerPortalController::class, 'summary']);
+    Route::post('/customer/tickets/{ticket}/reopen',       [\App\Http\Controllers\Api\CustomerPortalController::class, 'reopen']);
+    Route::post('/customer/tickets/{ticket}/follow-up',    [\App\Http\Controllers\Api\CustomerPortalController::class, 'followUp']);
+    Route::get('/customer/tickets/{ticket}/survey',        [\App\Http\Controllers\Api\SurveyController::class, 'show']);
+    Route::post('/customer/tickets/{ticket}/survey',       [\App\Http\Controllers\Api\SurveyController::class, 'submit']);
 });

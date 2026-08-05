@@ -10,16 +10,22 @@ export default function Dashboard() {
   const { user }            = useAuth();
   const [data, setData]     = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState(null);
 
   const prefix = user?.role === 'admin' ? '/admin' : '/staff';
 
   useEffect(() => {
     getStats()
       .then((res) => setData(res.data.data))
+      .catch((err) => setError(err.response?.status === 403
+        ? 'You do not have permission to view dashboard statistics.'
+        : 'Failed to load dashboard data. Please try again later.'))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <p className="loading-text">Loading…</p>;
+  if (error)   return <div className="page"><h2>Dashboard</h2><p className="error-text">{error}</p></div>;
+  if (!data)   return <div className="page"><h2>Dashboard</h2><p>No data available.</p></div>;
 
   const { tickets, overdue, avg_resolution_hours, recent } = data;
 
