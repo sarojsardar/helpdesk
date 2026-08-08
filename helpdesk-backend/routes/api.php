@@ -89,6 +89,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     // Users (admin)
     Route::get('/users',              [UserController::class, 'index']);
+    Route::post('/users',             [UserController::class, 'store']);
     Route::get('/users/agents',       [UserController::class, 'agents']);
     Route::put('/users/{user}',       [UserController::class, 'update']);
 

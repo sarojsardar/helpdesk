@@ -18,8 +18,9 @@ export default function Departments() {
     setLoading(true);
     Promise.all([getDepartments(), getUsers()])
       .then(([dRes, uRes]) => {
-        setDepartments(dRes.data.data);
-        setUsers(uRes.data.data);
+        setDepartments(Array.isArray(dRes.data.data) ? dRes.data.data : []);
+        const u = uRes.data.data;
+        setUsers(Array.isArray(u) ? u : (u?.data ?? []));
       })
       .finally(() => setLoading(false));
   };

@@ -47,6 +47,24 @@ class UserController extends Controller
         ]);
     }
 
+    public function store(Request $request)
+    {
+        $this->authorize('manage', User::class);
+
+        $data = $request->validate([
+            'name'       => 'required|string|max:255',
+            'email'      => 'required|email|unique:users',
+            'password'   => 'required|string|min:8',
+            'role'       => 'required|in:admin,staff,user',
+            'department' => 'nullable|string|max:255',
+        ]);
+
+        $data['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+        $user = User::create($data);
+
+        return response()->json(['success' => true, 'data' => new UserResource($user), 'message' => 'User created'], 201);
+    }
+
     public function update(UpdateUserRequest $request, User $user)
     {
         $this->authorize('manage', User::class);

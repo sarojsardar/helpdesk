@@ -7,6 +7,7 @@ export const deleteCategory = (id)         => api.delete(`/categories/${id}`);
 
 export const getAgents      = ()           => api.get('/users/agents');
 export const getUsers       = (params)     => api.get('/users', { params });
+export const createUser     = (data)       => api.post('/users', data);
 export const updateUser     = (id, data)   => api.put(`/users/${id}`, data);
 export const getStats       = ()           => api.get('/stats');
 export const getAuditLog    = (params)     => api.get('/audit-log', { params });
